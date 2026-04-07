@@ -52,6 +52,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-center mb-10">⚽ Gestión de Partidos</h1>
 
+        {/* Input de Nombre */}
         <div className="max-w-sm mx-auto mb-12 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-2xl">
           <input 
             type="text" 
@@ -62,11 +63,12 @@ export default function Home() {
           />
         </div>
 
+        {/* Grilla de Partidos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {configPartidos.map((partido: any) => (
-            <div key={partido.id} className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg">
+            <div key={partido.id} className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg flex flex-col">
               
-              {/* Edición de Nombre de Fecha */}
+              {/* Título (Fecha) Editable */}
               <div className="mb-2">
                 {editando.id === partido.id && editando.campo === 'nombre' ? (
                   <input 
@@ -86,8 +88,8 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Edición de Lugar */}
-              <div className="mb-6 italic text-slate-400">
+              {/* Lugar Editable */}
+              <div className="mb-6 italic text-slate-400 text-sm">
                 {editando.id === partido.id && editando.campo === 'lugar' ? (
                   <input 
                     autoFocus
@@ -113,16 +115,27 @@ export default function Home() {
                 + ANOTARME
               </button>
 
-              <div className="space-y-2">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Lista de Jugadores:</p>
+              {/* Lista de Jugadores Numerada */}
+              <div className="space-y-2 flex-1">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Anotados:</p>
+                  <span className="text-xs bg-slate-700 px-2 py-1 rounded text-slate-300 font-mono">
+                    Total: {jugadores.filter((j: any) => j.partido_id === partido.id.toString()).length}
+                  </span>
+                </div>
+                
                 {jugadores
                   .filter((j: any) => j.partido_id === partido.id.toString())
-                  .map((j: any) => (
-                    <div key={j.id} className="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-sm">
-                      <span className="font-medium">{j.nombre}</span>
+                  .map((j: any, index: number) => (
+                    <div key={j.id} className="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-sm group">
+                      <div className="flex gap-3 items-center">
+                        <span className="text-slate-600 font-mono text-xs">{index + 1}.</span>
+                        <span className="font-medium text-slate-200">{j.nombre}</span>
+                      </div>
                       <button 
                         onClick={() => borrarJugador(j.id)} 
-                        className="text-red-500 hover:text-red-300 font-bold text-2xl px-2 leading-none"
+                        className="text-red-500 hover:text-red-400 font-bold text-2xl px-2 leading-none transition-colors"
+                        title="Borrar de la lista"
                       >
                         ×
                       </button>
