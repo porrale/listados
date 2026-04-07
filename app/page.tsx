@@ -19,6 +19,23 @@ export default function Home() {
     setConfigPartidos(conf || [])
   }
 
+  // FUNCIÓN PARA COPIAR AL PORTAPAPELES
+  const copiarLista = (partidoNombre: string, partidoId: string, lugar: string) => {
+    const listaFiltrada = jugadores.filter((j: any) => j.partido_id === partidoId)
+    
+    if (listaFiltrada.length === 0) return alert("La lista está vacía")
+
+    const textoJugadores = listaFiltrada
+      .map((j: any, index: number) => `${index + 1}. ${j.nombre}`)
+      .join('\n')
+
+    const mensajeFinal = `⚽ *LISTA PARA: ${partidoNombre.toUpperCase()}*\n📍 Lugar: ${lugar}\n\n${textoJugadores}\n\nTotal: ${listaFiltrada.length} anotados.`
+
+    navigator.clipboard.writeText(mensajeFinal)
+      .then(() => alert("¡Lista copiada para pegar en WhatsApp! 📋"))
+      .catch(() => alert("Error al copiar"))
+  }
+
   async function actualizarConfig(id: any, campo: any, valor: any) {
     const { error } = await supabase
       .from('configuracion_partidos')
@@ -50,9 +67,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-10">⚽ Gestión de Partidos</h1>
+        <h1 className="text-3xl font-bold text-center mb-10 text-green-500">⚽ Gestión de Partidos</h1>
 
-        {/* Input de Nombre */}
         <div className="max-w-sm mx-auto mb-12 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-2xl">
           <input 
             type="text" 
@@ -63,12 +79,10 @@ export default function Home() {
           />
         </div>
 
-        {/* Grilla de Partidos */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {configPartidos.map((partido: any) => (
             <div key={partido.id} className="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-lg flex flex-col">
               
-              {/* Título (Fecha) Editable */}
               <div className="mb-2">
                 {editando.id === partido.id && editando.campo === 'nombre' ? (
                   <input 
@@ -88,8 +102,7 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Lugar Editable */}
-              <div className="mb-6 italic text-slate-400 text-sm">
+              <div className="mb-4 italic text-slate-400 text-sm">
                 {editando.id === partido.id && editando.campo === 'lugar' ? (
                   <input 
                     autoFocus
@@ -107,15 +120,22 @@ export default function Home() {
                   </p>
                 )}
               </div>
+
+              {/* BOTÓN COPIAR LISTA */}
+              <button 
+                onClick={() => copiarLista(partido.nombre_fecha, partido.id.toString(), partido.lugar)}
+                className="mb-4 text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 py-1.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                📋 Copiar lista para WhatsApp
+              </button>
               
               <button 
                 onClick={() => sumarJugador(partido.id)}
                 className="w-full bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold mb-6 transition-all shadow-lg active:scale-95 text-white"
               >
-                + ANOTARME
+                + ME SUMO
               </button>
 
-              {/* Lista de Jugadores Numerada */}
               <div className="space-y-2 flex-1">
                 <div className="flex justify-between items-center mb-2">
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Anotados:</p>
@@ -127,15 +147,14 @@ export default function Home() {
                 {jugadores
                   .filter((j: any) => j.partido_id === partido.id.toString())
                   .map((j: any, index: number) => (
-                    <div key={j.id} className="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-sm group">
+                    <div key={j.id} className="flex justify-between items-center bg-slate-900 p-3 rounded-lg border border-slate-700 shadow-sm">
                       <div className="flex gap-3 items-center">
                         <span className="text-slate-600 font-mono text-xs">{index + 1}.</span>
                         <span className="font-medium text-slate-200">{j.nombre}</span>
                       </div>
                       <button 
                         onClick={() => borrarJugador(j.id)} 
-                        className="text-red-500 hover:text-red-400 font-bold text-2xl px-2 leading-none transition-colors"
-                        title="Borrar de la lista"
+                        className="text-red-500 hover:text-red-400 font-bold text-2xl px-2 leading-none"
                       >
                         ×
                       </button>
