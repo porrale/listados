@@ -3,9 +3,10 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 export default function Home() {
+  
   const [nombreUsuario, setNombreUsuario] = useState('')
-  const [jugadores, setJugadores] = useState([])
-  const [configPartidos, setConfigPartidos] = useState([])
+  const [jugadores, setJugadores] = useState<any[]>([])
+  const [configPartidos, setConfigPartidos] = useState<any[]>([])
   const [editando, setEditando] = useState({ id: null, campo: null }) // Para saber qué estamos editando
 
   useEffect(() => {
